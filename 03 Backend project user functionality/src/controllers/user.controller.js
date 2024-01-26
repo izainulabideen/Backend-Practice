@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteUploadedFile, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApirResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -288,6 +288,8 @@ const updateAvatar = asyncHandler(async (req, res) => {
     }
   ).select("-password");
 
+  await deleteUploadedFile(req.user?.avatar);
+
   return res
     .status(200)
     .json(new ApiResponse(200, user, "Avatar image updated successfully"));
@@ -313,6 +315,8 @@ const updateCoverImage = asyncHandler(async (req, res) => {
       new: true,
     }
   ).select("-password");
+
+  await deleteUploadedFile(req.user?.coverImage);
 
   return res
     .status(200)
